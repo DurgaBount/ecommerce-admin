@@ -1,7 +1,6 @@
 "use client";
 
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Heading from "@/components/ui/heading";
+import ImageUpload from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useOrigin } from "@/hooks/use-origin";
@@ -38,7 +38,6 @@ type BillboardFormValues = z.infer<typeof formSchema>;
 const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
   const params = useParams();
   const router = useRouter();
-  const origin = useOrigin();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,29 +56,88 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
     },
   });
 
-  const onSumbit = async (data: BillboardFormValues) => {
+  // const onSubmit = async (data: BillboardFormValues) => {
+  //   try {
+  //     setLoading(true);
+  //     if (initialData) {
+  //       await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
+  //     } else {
+  //       await axios.post(`/api/${params.storeId}/billboards`, data);
+  //     }
+  //     router.refresh();
+  //     router.push(`/${params.storeId}/billboards`);
+  //     toast.success(toastMessage);
+  //   } catch (error: any) {
+  //     toast.error('Something went wrong.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const onSubmit = async (data: BillboardFormValues) => {
     try {
       setLoading(true);
-
-      await axios.patch(`/api/stores/${params.storeId}`, data);
+      if (initialData) {
+        await axios.patch(
+          `/api/${params.storeId}/billboards/${params.billboardId}`,
+          data
+        );
+      } else {
+        await axios.post(`/api/${params.storeId}/billboards`, data);
+      }
       router.refresh();
-      toast.success("Store Updated.");
-    } catch (error) {
-      toast.error("Something went wrong");
+      //router.push(`/${params.storeId}/billboards`);
+
+      window.location.assign(`/${params.storeId}/billboards`);
+      toast.success(toastMessage);
+    } catch (error: any) {
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
 
+  // const onSumbit = async (data: BillboardFormValues) => {
+  //   try {
+  //     setLoading(true);
+
+  //     console.log("initialData", initialData);
+  //     console.log("billboardId", params.billboardId);
+
+  //     if (initialData) {
+  //       await axios.patch(
+  //         `/api/${params.storeId}/billboards/${params.billboardId}`,
+  //         data
+  //       );
+  //     } else {
+  //       await axios.post(`/api/${params.storeId}/billboards`, data);
+  //     }
+
+  //     router.refresh();
+  //     router.push(`/${params.storeId}/billboards`);
+
+  //     toast.success(toastMessage);
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/stores/${params.storeId}`);
+      await axios.delete(
+        `/api/${params.storeId}/billboards/${params.billboardId}`
+      );
       router.refresh();
-      router.push("/");
-      toast.success("Store deleted.");
+      window.location.assign(`/${params.storeId}/billboards`);
+      //router.push(`/${params.storeId}/billboards`);
+      toast.success("Billboard deletednm.");
     } catch (error: any) {
-      toast.error("Make sure you removed all products and categories first.");
+      toast.error(
+        "Make sure you removed all categories using this billboard first."
+      );
     } finally {
       setLoading(false);
       setOpen(false);
@@ -96,32 +154,56 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
       />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
+
+        {/* <Button
+          disabled={loading}
+          variant={"destructive"}
+          size={"icon"}
+          onClick={() => {}}
+        >
+          <Trash className="h-4 w-4"></Trash>
+        </Button> */}
+
         {initialData && (
           <Button
             disabled={loading}
             variant={"destructive"}
             size={"icon"}
-            onClick={() => {}}
+            onClick={() => setOpen(true)}
           >
-            <Trash className="h-4 w-4"></Trash>
+            <Trash className="h-4 w-4" />
           </Button>
         )}
-        <Button
-          disabled={loading}
-          variant={"destructive"}
-          size={"icon"}
-          onClick={() => setOpen(true)}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
       </div>
       <Separator />
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSumbit)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Background Image</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value ? [field.value] : []}
+                      disabled={loading}
+                      onChange={(url) => {
+                        field.onChange(url);
+                      }}
+                      onRemove={() => field.onChange("")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
           <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
