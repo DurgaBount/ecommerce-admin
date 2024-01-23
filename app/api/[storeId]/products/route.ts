@@ -68,6 +68,8 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 405 });
     }
 
+    console.log("bodybody", body);
+
     const product = await prismadb.product.create({
       data: {
         name,

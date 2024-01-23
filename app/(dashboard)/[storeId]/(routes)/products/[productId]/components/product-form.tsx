@@ -104,12 +104,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           data
         );
       } else {
-        console.log("Data", data);
-
         await axios.post(`/api/${params.storeId}/products`, data);
       }
       router.refresh();
-      // router.push(`/${params.storeId}/products`);
+      //router.push(`/${params.storeId}/products`);
       window.location.assign(`/${params.storeId}/products`);
       toast.success(toastMessage);
     } catch (error: any) {
@@ -118,6 +116,32 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       setLoading(false);
     }
   };
+
+  // const onSubmit = async (data: ProductFormValues) => {
+  //   console.log("onSubmit", data);
+
+  //   try {
+  //     setLoading(true);
+  //     if (initialData) {
+  //       await axios.patch(
+  //         `/api/${params.storeId}/products/${params.productId}`,
+  //         data
+  //       );
+  //     } else {
+  //       console.log("Data", data);
+
+  //       await axios.post(`/api/${params.storeId}/products`, data);
+  //     }
+  //     router.refresh();
+  //     // router.push(`/${params.storeId}/products`);
+  //     window.location.assign(`/${params.storeId}/products`);
+  //     toast.success(toastMessage);
+  //   } catch (error: any) {
+  //     toast.error("Something went wrong.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const onDelete = async () => {
     try {
