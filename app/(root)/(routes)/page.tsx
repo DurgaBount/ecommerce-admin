@@ -9,11 +9,11 @@ const SetupPage = () => {
   const isOpen = useStoreModal((state) => state.isOpen);
 
   // Need only for super admin registration time
-  useEffect(() => {
-    if (!isOpen) {
-      onOpen();
-    }
-  }, [isOpen, onOpen]);
+  // useEffect(() => {
+  //   if (!isOpen) {
+  //     onOpen();
+  //   }
+  // }, [isOpen, onOpen]);
 
   return (
     <div className="bg-slate-100 h-full">
