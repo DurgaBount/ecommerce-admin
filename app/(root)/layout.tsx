@@ -1,7 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { Children } from "react";
 
 export default async function SetupLayout({
   children,
@@ -14,13 +13,30 @@ export default async function SetupLayout({
     redirect("/sign-in");
   }
 
-  const store = await prismadb.store.findFirst({
-    where: {
-      userId,
-    },
-  });
-  if (store) {
-    redirect(`/${store.id}`);
+  const isSuperAdmin = process.env.SUPER_ADMIN == userId && true;
+
+  console.log("isSuperAdmin", isSuperAdmin);
+  console.log("useridddd", process.env.SUPER_ADMIN);
+  console.log("userId", userId);
+
+  if (isSuperAdmin) {
+    const store = await prismadb.store.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (store) {
+      redirect(`/${store.id}`);
+    }
+  } else {
+    const user = await prismadb.user.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (user) {
+      redirect(`/${user.storeId}`);
+    }
   }
 
   return <>{children}</>;

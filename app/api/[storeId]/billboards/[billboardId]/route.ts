@@ -117,7 +117,6 @@ export async function DELETE(
     const storeByUserId = await prismadb.store.findFirst({
       where: {
         id: params.storeId,
-        userId,
       },
     });
 
@@ -149,6 +148,8 @@ export async function PATCH(
 
     const { label, imageUrl } = body;
 
+    console.log("patch_", label, imageUrl);
+
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
     }
@@ -168,7 +169,7 @@ export async function PATCH(
     const storeByUserId = await prismadb.store.findFirst({
       where: {
         id: params.storeId,
-        userId,
+        //userId,
       },
     });
 

@@ -16,15 +16,28 @@ export default async function DashboardLayout({
     redirect("/sign-in");
   }
 
-  const store = await prismadb.store.findFirst({
-    where: {
-      id: params.storeId,
-      userId: userId,
-    },
-  });
+  const isSuperAdmin = process.env.SUPER_ADMIN == userId && true;
 
-  if (!store) {
-    redirect("/");
+  if (isSuperAdmin) {
+    const store = await prismadb.store.findFirst({
+      where: {
+        id: params.storeId,
+      },
+    });
+
+    if (!store) {
+      redirect("/");
+    }
+  } else {
+    const user = await prismadb.user.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (!user) {
+      redirect("/");
+    }
   }
 
   return (

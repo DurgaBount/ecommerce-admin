@@ -26,6 +26,7 @@ import { z } from "zod";
 
 interface SettingsFormProps {
   initialData: any;
+  isSuperAdmin: boolean;
 }
 
 const formSchema = z.object({
@@ -34,13 +35,18 @@ const formSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof formSchema>;
 
-const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
+const SettingsForm: React.FC<SettingsFormProps> = ({
+  initialData,
+  isSuperAdmin,
+}) => {
   const params = useParams();
   const router = useRouter();
   const origin = useOrigin();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [addedUserId, setAddedUserId] = useState("");
+  const [errorMsz, setErrorMsz] = useState("");
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
@@ -54,6 +60,27 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
       await axios.patch(`/api/stores/${params.storeId}`, data);
       router.refresh();
       toast.success("Store Updated.");
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onAddUser = async () => {
+    console.log("params", params);
+    console.log("userId", addedUserId);
+
+    try {
+      setLoading(true);
+
+      await axios.post(`/api/stores/${params.storeId}`, {
+        userId: addedUserId,
+        name: initialData.name,
+      });
+      setAddedUserId("");
+      router.refresh();
+      toast.success("User Added.");
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -86,14 +113,16 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
       />
       <div className="flex items-center justify-between">
         <Heading title="Settings" description="Manage store preferences" />
-        <Button
-          disabled={loading}
-          variant={"destructive"}
-          size={"icon"}
-          onClick={() => setOpen(true)}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
+        {isSuperAdmin && (
+          <Button
+            disabled={loading}
+            variant={"destructive"}
+            size={"icon"}
+            onClick={() => setOpen(true)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <Separator />
 
@@ -128,6 +157,37 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           </Button>
         </form>
       </Form>
+
+      {isSuperAdmin && (
+        <div>
+          <label> User ID</label>
+
+          <Input
+            className="mt-4"
+            placeholder="Enter user id"
+            value={addedUserId}
+            disabled={loading}
+            onChange={(e) => {
+              setAddedUserId(e.target.value);
+            }}
+          />
+          <p>{errorMsz}</p>
+          <Button
+            onClick={async () => {
+              if (addedUserId) {
+                onAddUser();
+              } else {
+                setErrorMsz("Please enter user id");
+              }
+            }}
+            disabled={loading}
+            className="ml-auto mt-6"
+          >
+            Add User
+          </Button>
+        </div>
+      )}
+
       <Separator />
       <ApiAlert
         title="NEXT_PUBLIC_API_URL"

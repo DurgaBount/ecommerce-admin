@@ -56,24 +56,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
     },
   });
 
-  // const onSubmit = async (data: BillboardFormValues) => {
-  //   try {
-  //     setLoading(true);
-  //     if (initialData) {
-  //       await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
-  //     } else {
-  //       await axios.post(`/api/${params.storeId}/billboards`, data);
-  //     }
-  //     router.refresh();
-  //     router.push(`/${params.storeId}/billboards`);
-  //     toast.success(toastMessage);
-  //   } catch (error: any) {
-  //     toast.error('Something went wrong.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const onSubmit = async (data: BillboardFormValues) => {
     try {
       setLoading(true);
@@ -86,7 +68,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
         await axios.post(`/api/${params.storeId}/billboards`, data);
       }
       router.refresh();
-      //router.push(`/${params.storeId}/billboards`);
 
       window.location.assign(`/${params.storeId}/billboards`);
       toast.success(toastMessage);
@@ -97,33 +78,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
     }
   };
 
-  // const onSumbit = async (data: BillboardFormValues) => {
-  //   try {
-  //     setLoading(true);
-
-  //     console.log("initialData", initialData);
-  //     console.log("billboardId", params.billboardId);
-
-  //     if (initialData) {
-  //       await axios.patch(
-  //         `/api/${params.storeId}/billboards/${params.billboardId}`,
-  //         data
-  //       );
-  //     } else {
-  //       await axios.post(`/api/${params.storeId}/billboards`, data);
-  //     }
-
-  //     router.refresh();
-  //     router.push(`/${params.storeId}/billboards`);
-
-  //     toast.success(toastMessage);
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const onDelete = async () => {
     try {
       setLoading(true);
@@ -132,7 +86,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
       );
       router.refresh();
       window.location.assign(`/${params.storeId}/billboards`);
-      //router.push(`/${params.storeId}/billboards`);
       toast.success("Billboard deletednm.");
     } catch (error: any) {
       toast.error(

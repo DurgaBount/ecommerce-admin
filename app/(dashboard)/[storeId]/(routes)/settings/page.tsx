@@ -10,6 +10,8 @@ interface SettingsPageProps {
 const SettingsPage: React.FC<SettingsPageProps> = async ({ params }) => {
   const { userId } = auth();
 
+  const isSuperAdmin = process.env.SUPER_ADMIN == userId && true;
+
   if (!userId) {
     redirect("/sign-in");
   }
@@ -17,7 +19,6 @@ const SettingsPage: React.FC<SettingsPageProps> = async ({ params }) => {
   const store = await prismadb.store.findFirst({
     where: {
       id: params.storeId,
-      userId,
     },
   });
 
@@ -28,7 +29,7 @@ const SettingsPage: React.FC<SettingsPageProps> = async ({ params }) => {
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <SettingsForm initialData={store} />
+        <SettingsForm initialData={store} isSuperAdmin={isSuperAdmin} />
       </div>
     </div>
   );
